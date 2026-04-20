@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BU-Flower Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'purple-primary': '#7C3AED',
+                        'purple-secondary': '#A855F7',
+                        'orange-primary': '#F97316',
+                        'orange-secondary': '#FB923C'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-orange-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-primary to-orange-primary shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-white">BU-Flower Store</h1>
+                <nav class="space-x-4">
+                    <a href="{{ url_for('flowers') }}" class="bg-white text-purple-primary px-4 py-2 rounded-lg hover:bg-purple-50 transition duration-300">จัดการสินค้า</a>
+                    <a href="{{ url_for('categories') }}" class="bg-white text-orange-primary px-4 py-2 rounded-lg hover:bg-orange-50 transition duration-300">จัดการหมวดหมู่</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-purple-primary mb-4">สินค้าทั้งหมด</h2>
+            <p class="text-gray-600 text-lg">เลือกดอกไม้ที่คุณชื่นชอบ</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Flowers Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for flower in flowers %}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-400 to-orange-400 h-32 flex items-center justify-center">
+                    <div class="text-white text-4xl">🌸</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-purple-primary mb-2">{{ flower.name }}</h3>
+                    <p class="text-gray-600 mb-2">{{ flower.category_name or 'ไม่มีหมวดหมู่' }}</p>
+                    <p class="text-sm text-gray-500 mb-4">{{ flower.description }}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-orange-primary">฿{{ "%.2f"|format(flower.price) }}</span>
+                        <div class="space-x-2">
+                            <a href="{{ url_for('edit_flower', id=flower.id) }}" class="bg-purple-primary text-white px-3 py-1 rounded-lg text-sm hover:bg-purple-secondary transition duration-300">แก้ไข</a>
+                            <form method="POST" action="{{ url_for('delete_flower', id=flower.id) }}" class="inline" onsubmit="return confirm('คุณต้องการลบสินค้านี้หรือไม่?')">
+                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition duration-300">ลบ</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not flowers %}
+        <div class="text-center py-12">
+            <div class="text-6xl mb-4">🌺</div>
+            <h3 class="text-2xl font-bold text-gray-400 mb-2">ไม่มีสินค้า</h3>
+            <p class="text-gray-500">เพิ่มสินค้าแรกของคุณ</p>
+            <a href="{{ url_for('add_flower') }}" class="inline-block mt-4 bg-gradient-to-r from-purple-primary to-orange-primary text-white px-6 py-3 rounded-lg hover:from-purple-secondary hover:to-orange-secondary transition duration-300">เพิ่มสินค้า</a>
+        </div>
+        {% endif %}
+
+        <!-- Add Flower Button -->
+        <div class="text-center mt-8">
+            <a href="{{ url_for('add_flower') }}" class="inline-block bg-gradient-to-r from-purple-primary to-orange-primary text-white px-8 py-4 rounded-lg text-xl font-bold hover:from-purple-secondary hover:to-orange-secondary transition duration-300 shadow-lg">
+                ➕ เพิ่มสินค้าใหม่
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-purple-primary to-orange-primary text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 BU-Flower Store. สร้างด้วยความรักและ Flask</p>
+        </div>
+    </footer>
+</body>
+</html>
